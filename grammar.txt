@@ -1,0 +1,22 @@
+<program> ::= <statement>*
+
+<statement> ::= <declaration>
+            | <assignment>
+            | <print>
+            | <loop>
+            | <add>
+
+<declaration> ::= "let" <identifier> "=" <number> ";"
+
+<identifier> ::= [a-z]
+<number> ::= [0-9]+
+
+<value> ::= <identifier> | <number>
+
+<assignment> ::= <identifier> "=" <value> ";"
+
+<print> ::= "printvar" "(" <identifier> ")" ";"
+
+<loop> ::= "for" "(" <number> ")" "{" <statement>+ "}"
+
+<add> ::= "add" "(" <value> "," <value> "," <identifier> ")" ";"
