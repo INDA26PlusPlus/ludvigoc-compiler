@@ -9,6 +9,13 @@ class TokenType(Enum):
     SEMICOLON = 5
     PRINT = 6
     ADD = 7
+    LWING = 8
+    RWING = 9
+    LPAREN = 10
+    RPAREN = 11
+    FOR = 12
+    COMMA = 13
+    UNKNOWN = 14
 
 class Token():
     def __init__(self, type, value):
@@ -40,4 +47,46 @@ def convertToTokens(source):
 
     while i < len(source):
         char = source[i]
-        currentWord += char
+        if 'a' <= char <= 'z' or char.isdigit():
+            currentWord += char
+        elif not char.isspace():
+            convertWord(currentWord)
+            currentWord = ""
+            convertWord(char)
+        i += 1
+
+def convertWord(word):
+
+    if len(word) == 1 and "a" <= word <= "z":
+        return Token(TokenType.IDENTIFIER, word)
+    if word.isdigit():
+        return Token(TokenType.NUMBER, word)
+
+    
+    match word:
+        case "let": 
+            t = TokenType.LET
+        case "=": 
+            t = TokenType.EQUALS
+        case "printvar": 
+            t = TokenType.PRINT
+        case ";": 
+            t = TokenType.SEMICOLON
+        case "for": 
+            t = TokenType.FOR
+        case ",": 
+            t = TokenType.COMMA
+        case "add": 
+            t = TokenType.ADD
+        case "{": 
+            t = TokenType.LWING
+        case "}": 
+            t = TokenType.RWING
+        case "(": 
+            t = TokenType.LPAREN
+        case ")": 
+            t = TokenType.RPAREN
+        case _: 
+            t = TokenType.UNKNOWN
+
+    return Token(t, "")
