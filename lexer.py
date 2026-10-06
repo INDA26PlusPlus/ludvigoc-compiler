@@ -1,29 +1,4 @@
-import argparse
-from enum import Enum
-
-class TokenType(Enum):
-    LET = 1
-    IDENTIFIER = 2
-    EQUALS = 3
-    NUMBER = 4
-    SEMICOLON = 5
-    PRINT = 6
-    ADD = 7
-    LWING = 8
-    RWING = 9
-    LPAREN = 10
-    RPAREN = 11
-    FOR = 12
-    COMMA = 13
-    UNKNOWN = 14
-
-class Token():
-    def __init__(self, type, value):
-        self.type = type
-        self.value = value
-
-    def __repr__(self):
-        return f"Token({self.type}, {self.value})"
+from token import Token, TokenType
 
 def convertWord(word):
 
@@ -80,22 +55,3 @@ def convertToTokens(source):
         i += 1
 
     return tokensList
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", required=True)
-
-    args = parser.parse_args()
-
-    print("inputfile:",args.input)
-    
-    with open(args.input, "r") as file:
-        source = file.read()
-
-    print("contents of file:\n", source)
-
-    tokensList = convertToTokens(source)
-    
-    for t in tokensList:
-        print(t)
