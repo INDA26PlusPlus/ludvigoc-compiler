@@ -25,36 +25,6 @@ class Token():
     def __repr__(self):
         return f"Token({self.type}, {self.value})"
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", required=True)
-
-    args = parser.parse_args()
-
-    print("inputfile:",args.input)
-    
-    with open(args.input, "r") as file:
-        source = file.read()
-
-    print("contents of file:\n", source)
-
-    #convertToTokens(source)
-
-def convertToTokens(source):
-    currentWord = ""
-    i = 0
-
-    while i < len(source):
-        char = source[i]
-        if 'a' <= char <= 'z' or char.isdigit():
-            currentWord += char
-        elif not char.isspace():
-            convertWord(currentWord)
-            currentWord = ""
-            convertWord(char)
-        i += 1
-
 def convertWord(word):
 
     if len(word) == 1 and "a" <= word <= "z":
@@ -90,3 +60,42 @@ def convertWord(word):
             t = TokenType.UNKNOWN
 
     return Token(t, "")
+
+def convertToTokens(source):
+    currentWord = ""
+    i = 0
+    tokensList = []
+
+    while i < len(source):
+        char = source[i]
+        if 'a' <= char <= 'z' or char.isdigit():
+            currentWord += char
+        else:
+            if currentWord != "":
+                tokensList.append(convertWord(currentWord))
+                currentWord = ""
+            if not char.isspace():
+                tokensList.append(convertWord(char))
+            
+        i += 1
+
+    return tokensList
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input", required=True)
+
+    args = parser.parse_args()
+
+    print("inputfile:",args.input)
+    
+    with open(args.input, "r") as file:
+        source = file.read()
+
+    print("contents of file:\n", source)
+
+    tokensList = convertToTokens(source)
+    
+    for t in tokensList:
+        print(t)
