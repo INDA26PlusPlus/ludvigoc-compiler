@@ -8,14 +8,22 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    #print("inputfile:",args.input)
+    print("inputfile:",args.input)
     
     with open(args.input, "r") as file:
         source = file.read()
 
-    #print("contents of file:\n", source)
+    print("contents of file:\n", source)
 
     tokensList = convertToTokens(source)
+
+    print("Tokens:")
+    for token in tokensList:
+        print(token)
     
-    parse(tokensList)
+    statements = parse(tokensList)
+
+    print("Statements:")
+    for statement in statements:
+        print(statement)
 

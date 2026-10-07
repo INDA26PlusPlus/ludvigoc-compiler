@@ -1,8 +1,6 @@
 let a = 1;
 let b = 1;
-let c = 0;
-
-let n = 0;
+let c = 1;
 
 printvar(a);
 printvar(b);
@@ -11,6 +9,5 @@ for(10) {
     add(a, b, c);
     a = b;
     b = c;
-    add(n, 1, n);
     printvar(b);
 }
