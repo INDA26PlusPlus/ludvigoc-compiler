@@ -1,11 +1,7 @@
 from token import Token, TokenType
 
-def parse(tokensList):
-    t = 0
-    r = []
-    statements = []
-    while t < len(tokensList):
-        match tokensList[t].type:
+def parseStatement(tokensList, t):
+    match tokensList[t].type:
             case TokenType.LET:
                 r = parseDeclaration(tokensList, t)
             case TokenType.IDENTIFIER:
@@ -16,7 +12,15 @@ def parse(tokensList):
                 r = parseLoop(tokensList, t)
             case TokenType.ADD:
                 r = parseAdd(tokensList, t)
+    return r
 
+
+def parse(tokensList):
+    t = 0
+    r = []
+    statements = []
+    while t < len(tokensList):
+        r = parseStatement(tokensList, t)
         t += len(r)
         statements.append(r)
 
@@ -32,6 +36,52 @@ def parseDeclaration(tokensList, t):
     else:
         declarationList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3], tokensList[t+4]]
         return declarationList
+
+def parseAssignment(tokensList, t):
+    if (tokensList[t+1].type) != TokenType.EQUALS:
+        fail()
+    elif (tokensList[t+2].type) != TokenType.NUMBER:
+        fail()
+    elif (tokensList[t+3].type) != TokenType.SEMICOLON:
+        fail()
+    else:
+        declarationList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3]]
+        return declarationList
+
+def parsePrint(tokensList, t):
+    if (tokensList[t+1].type) != TokenType.LPAREN:
+        fail()
+    elif (tokensList[t+2].type) != TokenType.IDENTIFIER:
+        fail()
+    elif (tokensList[t+3].type) != TokenType.RPAREN:
+        fail()
+    elif (tokensList[t+4].type) != TokenType.SEMICOLON:
+        fail()
+    else:
+        declarationList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3], tokensList[t+4]]
+        return declarationList
+
+def parseAdd(tokensList, t):
+    if (tokensList[t+1].type) != TokenType.LPAREN:
+        fail()
+    elif (tokensList[t+2].type) != TokenType.IDENTIFIER or (tokensList[t+2].type) != TokenType.NUMBER:
+        fail()
+    elif (tokensList[t+3].type) != TokenType.COMMA:
+        fail()
+    elif (tokensList[t+4].type) != TokenType.IDENTIFIER or (tokensList[t+2].type) != TokenType.NUMBER:
+        fail()
+    elif (tokensList[t+5].type) != TokenType.COMMA:
+        fail()
+    elif (tokensList[t+6].type) != TokenType.IDENTIFIER:
+        fail()
+    elif (tokensList[t+7].type) != TokenType.RPAREN:
+        fail()
+    elif (tokensList[t+8].type) != TokenType.SEMICOLON:
+        fail()
+    else:
+        declarationList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3], tokensList[t+4], tokensList[t+5], tokensList[t+6], tokensList[t+7], tokensList[t+8]]
+        return declarationList
+
 
 def fail():
     raise Exception("Syntax error")
