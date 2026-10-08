@@ -1,6 +1,18 @@
 from lexer import convertToTokens
-from parser import parse
+from parser import parse, Node
 import argparse
+
+def printTree(treeList, depth = 0):
+    if not isinstance(treeList, list):
+        printTree([treeList], depth)
+        return
+    for tree in treeList:
+        if isinstance(tree, Node):
+            print("    " * depth, tree.type)
+            if tree.children != []:
+                printTree(tree.children, depth+1)
+        else:
+            print("    " * depth + str(tree))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -20,10 +32,8 @@ if __name__ == "__main__":
     print("Tokens:")
     for token in tokensList:
         print(token)
+
+    print("Tree:")
     
     statements = parse(tokensList)
-
-    print("Statements:")
-    for statement in statements:
-        print(statement)
-
+    printTree(statements)

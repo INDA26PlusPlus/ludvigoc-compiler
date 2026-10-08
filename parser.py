@@ -118,15 +118,14 @@ def parseLoop(tokensList, t):
         fail()
     elif (tokensList[t+4].type) != TokenType.LWING:
         fail()
-    loopList = [Node(statementTypes.ADDITION, tokensList[t+2])]
+    loopList = [tokensList[t+2]]
     t = t+5
 
     statementsInLoop = []
     while tokensList[t].type != TokenType.RWING:
         r, t = parseStatement(tokensList, t)
-        statementsInLoop.append(r)
+        loopList.append(r)
 
-    loopList.append(statementsInLoop)
     return Node(statementTypes.LOOP, loopList), t+1
 
 def fail():
