@@ -1,30 +1,39 @@
 from token import Token, TokenType
+from enum import Enum
 
-def superLen(lst):
-    length = 0
+class Node:
+    def __init__(self, t, children = []):
+        self.type = t
+        self.children = children
 
-    for element in lst:
-        if isinstance(element, list):
-            length += superLen(element)
-        else:
-            length += 1
+    def __repr__(self):
+        return f"Type: {self.type} Children: {self.children}\n"
 
-    return length
+class statementTypes:
+    DECLARATION = "declaration"
+    ASSIGNMENT = "assignment"
+    PRINTSTATEMENT = "print"
+    ADDITION = "addition"
+    LOOP = "loop"
 
 def parseStatement(tokensList, t):
     match tokensList[t].type:
             case TokenType.LET:
                 r = parseDeclaration(tokensList, t)
+                t = t + 5
             case TokenType.IDENTIFIER:
                 r = parseAssignment(tokensList, t)
+                t = t + 4
             case TokenType.PRINT:
                 r = parsePrint(tokensList, t)
+                t = t + 5
             case TokenType.ADD:
                 r = parseAdd(tokensList, t)
+                t = t + 9
             case _:
                 print("Unexpected token:", tokensList[t])
                 fail()
-    return r
+    return r, t
 
 
 def parse(tokensList):
@@ -35,10 +44,9 @@ def parse(tokensList):
     while t < len(tokensList):
 
         if tokensList[t].type == TokenType.FOR:
-            r = parseLoop(tokensList, t)
+            r, t = parseLoop(tokensList, t)
         else:
-            r = parseStatement(tokensList, t)
-        t += superLen(r)
+            r, t = parseStatement(tokensList, t)
         statements.append(r)
     
     return statements
@@ -53,8 +61,8 @@ def parseDeclaration(tokensList, t):
     elif (tokensList[t+4].type) != TokenType.SEMICOLON:
         fail()
     else:
-        declarationList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3], tokensList[t+4]]
-        return declarationList
+        n = Node(statementTypes.DECLARATION, [tokensList[t+1], tokensList[t+3]])
+        return n
 
 def parseAssignment(tokensList, t):
     if (tokensList[t+1].type) != TokenType.EQUALS:
@@ -64,8 +72,8 @@ def parseAssignment(tokensList, t):
     elif (tokensList[t+3].type) != TokenType.SEMICOLON:
         fail()
     else:
-        declarationList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3]]
-        return declarationList
+        n = Node(statementTypes.ASSIGNMENT, [tokensList[t], tokensList[t+2]])
+        return n
 
 def parsePrint(tokensList, t):
     if (tokensList[t+1].type) != TokenType.LPAREN:
@@ -77,8 +85,8 @@ def parsePrint(tokensList, t):
     elif (tokensList[t+4].type) != TokenType.SEMICOLON:
         fail()
     else:
-        declarationList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3], tokensList[t+4]]
-        return declarationList
+        n = Node(statementTypes.PRINTSTATEMENT, [tokensList[t+2]])
+        return n
 
 def parseAdd(tokensList, t):
     if (tokensList[t+1].type) != TokenType.LPAREN:
@@ -98,8 +106,8 @@ def parseAdd(tokensList, t):
     elif (tokensList[t+8].type) != TokenType.SEMICOLON:
         fail()
     else:
-        declarationList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3], tokensList[t+4], tokensList[t+5], tokensList[t+6], tokensList[t+7], tokensList[t+8]]
-        return declarationList
+        n = Node(statementTypes.ADDITION, [tokensList[t+2], tokensList[t+4], tokensList[t+6]])
+        return n
 
 def parseLoop(tokensList, t):
     if (tokensList[t+1].type) != TokenType.LPAREN:
@@ -110,20 +118,16 @@ def parseLoop(tokensList, t):
         fail()
     elif (tokensList[t+4].type) != TokenType.LWING:
         fail()
-    loopList = [tokensList[t], tokensList[t+1], tokensList[t+2], tokensList[t+3], tokensList[t+4]]
-    finalList = []
-    finalList.append(loopList)
+    loopList = [Node(statementTypes.ADDITION, tokensList[t+2])]
     t = t+5
 
     statementsInLoop = []
     while tokensList[t].type != TokenType.RWING:
-        r = parseStatement(tokensList, t)
-        t += len(r)
+        r, t = parseStatement(tokensList, t)
         statementsInLoop.append(r)
 
-    finalList.append(statementsInLoop)
-    finalList.append(tokensList[t])
-    return finalList
+    loopList.append(statementsInLoop)
+    return Node(statementTypes.LOOP, loopList), t+1
 
 def fail():
     raise Exception("Syntax error")
